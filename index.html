@@ -595,9 +595,20 @@ function fmtK(n) {
 }
 
 function fmtDate(raw) {
-  const p = String(raw).trim().split('-');
-  if (p.length === 3) return p[2] + '/' + p[1];
-  return raw;
+  try {
+    const s = String(raw).trim();
+    // Formato ISO completo: 2026-05-01T03:00:00.000Z  ou  2026-05-01T00:00:00Z
+    if (s.includes('T')) {
+      const dt = new Date(s);
+      const day   = String(dt.getUTCDate()).padStart(2, '0');
+      const month = String(dt.getUTCMonth() + 1).padStart(2, '0');
+      return day + '/' + month;
+    }
+    // Formato simples: 2026-05-01
+    const p = s.split('-');
+    if (p.length === 3) return p[2].padStart(2,'0') + '/' + p[1].padStart(2,'0');
+    return s;
+  } catch(e) { return String(raw); }
 }
 
 function showError(msg, detail) {
